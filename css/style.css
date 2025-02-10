@@ -59,6 +59,7 @@
        }
 
        .card-body {
+           position: relative;
            padding: 25px;
        }
 
@@ -167,6 +168,75 @@
            color: #212529;
        }
 
+       /*custom legend*/
+       #legend_div {
+           position: absolute;
+           bottom: 40px;
+           right: 40px;
+           margin-top: 20px;
+           width: 300px;
+           font-size: 14px;
+       }
+
+       .legend-item {
+           display: flex;
+           justify-content: space-between;
+           padding: 10px;
+           border-bottom: 1px solid #ccc;
+       }
+
+       .legend-country {
+           width: 150px;
+       }
+
+       .legend-percentage {
+           text-align: right;
+           width: 100px;
+           color: #212529;
+       }
+
+       #chart_div {
+           height: 300px;
+           width: 650px;
+       }
+
+       .tooltip-button {
+           position: relative;
+       }
+
+       .tooltip {
+           visibility: hidden;
+           width: 60px;
+           background-color: #3366cc;
+           color: white;
+           text-align: center;
+           border-radius: 5px;
+           padding: 5px;
+           position: absolute;
+           z-index: 1;
+           top: 125%;
+           left: 50%;
+           margin-left: -30px;
+           opacity: 0;
+           transition: opacity 0.3s;
+       }
+
+       .tooltip::before {
+           content: '';
+           position: absolute;
+           bottom: 100%;
+           left: 50%;
+           margin-left: -5px;
+           border-width: 5px;
+           border-style: solid;
+           border-color: transparent transparent #3366cc transparent;
+       }
+
+       .tooltip-button:hover .tooltip {
+           visibility: visible;
+           opacity: 1;
+       }
+
        footer {
            background-color: #343a40;
            padding: 20px 0;
@@ -175,6 +245,21 @@
        .copyright {
            text-align: center;
            width: 100%;
+       }
+
+       @media (max-width: 970px) {
+           #chart_div {
+               height: 300px;
+               width: 90%;
+               margin: 0 auto;
+           }
+
+           #legend_div {
+               position: relative;
+               margin: 30px auto;
+               bottom: 0px;
+               right: 0px;
+           }
        }
 
        @media (max-width: 820px) {

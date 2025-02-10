@@ -143,10 +143,9 @@ function drawGeoChart() {
     formatter.format(data, 1);
 
     var options = {
-        height: 300,
         region: 'world',
         colorAxis: { minValue: 0, maxValue: 1, colors: ['#e0f7fa', '#3366cc'] },
-        legend: { numberFormat: '0%' },
+        legend: {  numberFormat: '0%', textStyle: {fontSize: 14} },
         tooltip: {
             isHtml: true, trigger: 'focus', textStyle: {
                 fontSize: 14

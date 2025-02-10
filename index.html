@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <header class="text-white p-3" style="display: none;">
+        <div class="container">
+            <h1>Page Header</h1>
+        </div>
+    </header>
+
+    <main class="container mt-4 main-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-custom card-large mb-4">
+                    <div class="card-body">
+                        <div class="group-block">
+                            <div class="text-block">
+                                <h3 class="sub-title">Domain overview:</h3>
+                                <h1 class="card-title">gamicloud.com</h1>
+                            </div>
+                            <div class="btn-group-container">
+                                <div class="btn-group-left">
+                                    <button class="btn btn-custom btn-custom-mode active" id="btnD">D</button>
+                                    <button class="btn btn-custom btn-custom-mode" id="btnW">W</button>
+                                    <button class="btn btn-custom btn-custom-mode" id="btnM">M</button>
+                                </div>
+
+                                <div class="btn-group-right">
+                                    <button class="button-block">Worldwide</button>
+                                    <button class="button-block">All devices</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="number-block row">
+                            <div class="col-md-4">
+                                <div class="card card-color">
+                                    <div class="card-body">
+                                        <h3 class="card-header-small">Total visits</h3>
+                                        <h1 class="card-title">107,518</h1>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card card-color">
+                                    <div class="card-body">
+                                        <h3 class="card-header-small">Average visit duration</h3>
+                                        <h1 class="card-title">0:06:57</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card card-custom">
+                    <div class="card-body">
+                        <h2 class="card-title">Device distribution</h2>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                            tempor incididunt</p>
+                        <div id="piechart" style="width: 100%; height: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom">
+                    <div class="card-body">
+                        <h2 class="card-title">Visits over time</h2>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                            tempor incididunt</p>
+                        <div id="curve_chart" style="width: 100%; height: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-custom">
+                    <div class="card-body">
+                        <h2 class="card-title">Channels overview</h2>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                            tempor incididunt</p>
+                        <div id="columnchart_values" style="width: 100%; height: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card card-custom card-large">
+                    <div class="card-body">
+                        <h2 class="card-title">Geographical Distribution</h2>
+                        <p class="card-text">This is another large card at the bottom, which can contain similar or
+                            different information as the top card.</p>
+                        <div id="chart_div" style="width: 100%; height: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="text-white p-3">
+        <div class="container">
+            <p class="copyright">&copy;&nbsp;<script>document.write(new Date().getFullYear());</script></p>
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/buttons.js"></script>
+</body>
+</html>

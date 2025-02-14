@@ -147,7 +147,7 @@
        }
 
        .number-block {
-           gap: 60px;
+           gap: 10px;
        }
 
        .card-header-small {
@@ -158,7 +158,7 @@
        .card-color {
            background-color: #f0f0f0;
            border: none;
-           width: 300px;
+           width: 100%;
        }
 
        .card-color .card-header-small,

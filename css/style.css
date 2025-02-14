@@ -146,6 +146,10 @@
            border-radius: 20px;
        }
 
+       .number-block {
+           gap: 60px;
+       }
+
        .card-header-small {
            font-size: 1.1rem;
            color: #6c757d;

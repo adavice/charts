@@ -40,8 +40,8 @@ document.getElementById("btnM").addEventListener("click", function () {
 });
 
 function setRandomTime() {
-    const start = 4 * 60 + 12; // 04:12 in minutes and seconds
-    const end = 6 * 60 + 45; // 06:45 in minutes and seconds
+    const start = 4 * 60 + 12;
+    const end = 6 * 60 + 45;
     const randomSeconds = Math.floor(Math.random() * (end - start + 1)) + start;
     
     const minutes = Math.floor(randomSeconds / 60);

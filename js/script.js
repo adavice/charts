@@ -1,3 +1,58 @@
+document.getElementById("pop-up-link").addEventListener("click", function () {
+    document.getElementById("pop-up-block").style.opacity="1";
+    document.getElementById("pop-up-block").style.visibility="visible";
+    document.body.style.overflowY="hidden";
+});
+
+document.getElementById("close-icon").addEventListener("click", function () {
+    document.getElementById("pop-up-block").style.opacity="0";
+    document.getElementById("pop-up-block").style.visibility="hidden";
+    document.body.style.overflowY="auto";
+});
+
+function toggleActiveMode(buttonId) {
+    var buttons = document.querySelectorAll(".btn-custom-mode, .btn-custom");
+    buttons.forEach(function (btn) {
+        btn.classList.remove("active");
+    });
+    document.getElementById(buttonId).classList.add("active");
+}
+
+document.getElementById("btnD").addEventListener("click", function () {
+    toggleActiveMode("btnD");
+    drawPieChart();
+    drawColumnChart();
+    setRandomTime();
+});
+
+document.getElementById("btnW").addEventListener("click", function () {
+    toggleActiveMode("btnW");
+    drawPieChart();
+    drawColumnChart();
+    setRandomTime();
+});
+
+document.getElementById("btnM").addEventListener("click", function () {
+    toggleActiveMode("btnM");
+    drawPieChart();
+    drawColumnChart();
+    setRandomTime();
+});
+
+function setRandomTime() {
+    const start = 4 * 60 + 12; // 04:12 in minutes and seconds
+    const end = 6 * 60 + 45; // 06:45 in minutes and seconds
+    const randomSeconds = Math.floor(Math.random() * (end - start + 1)) + start;
+    
+    const minutes = Math.floor(randomSeconds / 60);
+    const seconds = randomSeconds % 60;
+    
+    const time = `00:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    document.getElementById('time-title').textContent = time;
+}
+
+setRandomTime();
+
 google.charts.load('current', { 'packages': ['corechart', 'geochart'] });
 
 google.charts.setOnLoadCallback(drawCharts);
@@ -10,12 +65,20 @@ function drawCharts() {
 }
 
 function drawPieChart() {
+    var mobileValue = Math.random() * (0.94 - 0.81) + 0.81;
+    mobileValue = Math.round(mobileValue * 100);
+    mobileValue = Math.min(Math.max(mobileValue, 81), 94);
+    mobileValue = mobileValue / 100;
+
+    var desktopValue = 1 - mobileValue;
+
+    desktopValue = Math.round(desktopValue * 100) / 100;
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Device');
     data.addColumn('number', 'Popularity');
     data.addRows([
-        ['Desktop', 16],
-        ['Mobile', 84]
+        ['Desktop', desktopValue],
+        ['Mobile', mobileValue]
     ]);
 
     var options = {
@@ -62,27 +125,16 @@ function drawLineChart() {
             }
         },
         hAxis: {
-            title: 'Time',
             minValue: 0,
             maxValue: 10,
-            format: '# hours',
-            titleTextStyle: {
-                fontSize: 12,
-                italic: true
-            },
             textStyle: {
                 fontSize: 10
             }
         },
         vAxis: {
-            title: 'Visits',
             minValue: 0,
             maxValue: 100000,
             format: '###,###',
-            titleTextStyle: {
-                fontSize: 12,
-                italic: true
-            },
             textStyle: {
                 fontSize: 10
             }
@@ -94,10 +146,13 @@ function drawLineChart() {
 }
 
 function drawColumnChart() {
+    var displayAdsValue = Math.random() * (0.87 - 0.75) + 0.75;
+    var paidValue = 1 - displayAdsValue;
+
     var data = google.visualization.arrayToDataTable([
         ['Channels', 'Percentage', { role: 'style' }],
-        ['DisplayAds', 0.75, '#6a98f6'],
-        ['Paid', 0.25, '#3366cc']
+        ['DisplayAds', displayAdsValue, '#6a98f6'],
+        ['Paid', paidValue, '#3366cc']
     ]);
 
     var formatter = new google.visualization.NumberFormat({ pattern: '0%' });
@@ -145,7 +200,7 @@ function drawGeoChart() {
     var options = {
         region: 'world',
         colorAxis: { minValue: 0, maxValue: 1, colors: ['#e0f7fa', '#3366cc'] },
-        legend: {  numberFormat: '0%', textStyle: {fontSize: 14} },
+        legend: { numberFormat: '0%', textStyle: { fontSize: 14 } },
         tooltip: {
             isHtml: true, trigger: 'focus', textStyle: {
                 fontSize: 14

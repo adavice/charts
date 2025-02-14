@@ -46,7 +46,9 @@
            margin-bottom: 40px;
        }
 
-       .col-md-4 .card {}
+       .card-height {
+           height: 100%;
+       }
 
        .card-large {
            height: fit-content;
@@ -326,7 +328,8 @@
        }
 
        /*pop styles*/
-       #pop-up-link, #close-icon {
+       #pop-up-link,
+       #close-icon {
            cursor: pointer;
        }
 

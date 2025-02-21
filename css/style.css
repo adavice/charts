@@ -193,9 +193,9 @@
            color: #212529;
        }
 
-       #chart_div {
+       #geochart {
            height: 300px;
-           width: 650px;
+           width: 700px;
        }
 
        .tooltip-button {
@@ -368,7 +368,7 @@
        }
 
        @media (max-width: 970px) {
-           #chart_div {
+           #geochart {
                height: 300px;
                width: 90%;
                margin: 0 auto;

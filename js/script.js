@@ -22,7 +22,6 @@ google.charts.load('current', { 'packages': ['corechart', 'geochart', 'line'] })
 
 let lineData = [];
 
-// Function to generate random data for the line chart and store it in localStorage
 function generateLineChartData() {
     if (localStorage.getItem('lineData')) {
         lineData = JSON.parse(localStorage.getItem('lineData'));
@@ -37,7 +36,7 @@ function drawLineChart() {
     lineChart.draw(google.visualization.arrayToDataTable([['Time', 'Visits'], ...lineData]), {
         curveType: 'function',
         legend: { position: 'none' },
-        tooltip: { isHtml: true, trigger: 'none' }, // Tooltips in percentage format
+        tooltip: { trigger: 'none' },
         hAxis: {
             title: '',
             textPosition: 'none'
@@ -61,28 +60,23 @@ function updateLineChartData() {
         }
         localStorage.setItem('lineData', JSON.stringify(lineData));
         drawLineChart();
-        setRandomTime();  // Update random time when graphs update
-    }, 60000 ); // 10 seconds interval
+        setRandomTime();
+    }, 60000 );
 }
 
-// Function to generate random data for pie, geo, and column charts
 function generateRandomDataForOtherCharts(type) {
     const data = [];
     switch (type) {
         case 'pie':
-            const mobilePercentage = Math.floor(Math.random() * (94 - 81 + 1)) + 81;  // Random value between 81 and 94
-            const desktopPercentage = 100 - mobilePercentage; // Ensure the total equals 100%
-
-            // Pie chart with mobile and desktop
+            const mobilePercentage = Math.floor(Math.random() * (94 - 81 + 1)) + 81;
+            const desktopPercentage = 100 - mobilePercentage;
             data.push(['Device', 'Percentage']);
             data.push(['Mobile', mobilePercentage]);
             data.push(['Desktop', desktopPercentage]);
             break;
         case 'column':
-            const displayAdsPercentage = Math.floor(Math.random() * (87 - 75 + 1)) + 75;  // Random value between 75 and 87
-            const paidPercentage = 100 - displayAdsPercentage; // Ensure the total equals 100%
-
-            // Column chart with DisplayAds and Paid
+            const displayAdsPercentage = Math.floor(Math.random() * (87 - 75 + 1)) + 75;
+            const paidPercentage = 100 - displayAdsPercentage;
             data.push(['Category', 'Percentage']);
             data.push(['DisplayAds', displayAdsPercentage]);
             data.push(['Paid', paidPercentage]);
@@ -91,13 +85,11 @@ function generateRandomDataForOtherCharts(type) {
             data.push(['Country', 'Percentage']);
             const countries = ['France', 'Spain', 'United Kingdom', 'Australia', 'Mexico'];
             let remainingValue = 100;
-
             countries.forEach((country, index) => {
                 let randomValue = (index === countries.length - 1) ? remainingValue : Math.floor(Math.random() * (remainingValue - (countries.length - 1 - index))) + 1;
                 remainingValue -= randomValue;
                 data.push([country, randomValue]);
             });
-
             break;
         default:
             break;
@@ -105,25 +97,22 @@ function generateRandomDataForOtherCharts(type) {
     return data;
 }
 
-// Function to save random data for pie, geo, and column charts to localStorage
 function saveDataToLocalStorage() {
     const pieData = generateRandomDataForOtherCharts('pie');
     const geoData = generateRandomDataForOtherCharts('geo');
     const columnData = generateRandomDataForOtherCharts('column');
-
     localStorage.setItem('pieData', JSON.stringify(pieData));
     localStorage.setItem('geoData', JSON.stringify(geoData));
     localStorage.setItem('columnData', JSON.stringify(columnData));
 }
 
-// Function to load the data for pie, geo, and column charts from localStorage
 function loadDataFromLocalStorage() {
     const pieData = JSON.parse(localStorage.getItem('pieData'));
     const geoData = JSON.parse(localStorage.getItem('geoData'));
     const columnData = JSON.parse(localStorage.getItem('columnData'));
 
     if (!pieData || !geoData || !columnData) {
-        saveDataToLocalStorage(); // Regenerate data if not found
+        saveDataToLocalStorage();
     }
 
     return {
@@ -133,11 +122,8 @@ function loadDataFromLocalStorage() {
     };
 }
 
-// Function to draw pie, geo, and column charts
 function drawCharts() {
     const { pieData, geoData, columnData } = loadDataFromLocalStorage();
-
-    // Draw Pie Chart
     const pieChartData = google.visualization.arrayToDataTable(pieData);
     const pieChart = new google.visualization.PieChart(document.getElementById('piechart'));
     pieChart.draw(pieChartData, {
@@ -146,8 +132,7 @@ function drawCharts() {
             textStyle: {
                 fontSize: 14
             },
-            trigger: 'focus',
-            isHtml: true
+            trigger: 'focus'
         },
         pieSliceTextStyle: {
             fontSize: 14
@@ -161,7 +146,6 @@ function drawCharts() {
         }
     });
 
-    // Draw Geo Chart
     const geoChartData = google.visualization.arrayToDataTable(geoData);
     const geoChart = new google.visualization.GeoChart(document.getElementById('geochart'));
     geoChart.draw(geoChartData, {
@@ -171,12 +155,10 @@ function drawCharts() {
             trigger: 'focus',
             textStyle: {
                 fontSize: 14
-            },
-            isHtml: true
+            }
         }
     });
 
-    // Draw Column Chart
     const columnChartData = google.visualization.arrayToDataTable(columnData);
     const columnChart = new google.visualization.ColumnChart(document.getElementById('columnchart'));
     columnChart.draw(columnChartData, {
@@ -185,8 +167,7 @@ function drawCharts() {
             textStyle: {
                 fontSize: 14
             },
-            trigger: 'focus',
-            isHtml: true
+            trigger: 'focus'
         },
         legend: {
             position: 'none',
@@ -199,7 +180,7 @@ function drawCharts() {
         },
         vAxis: {
             title: '',
-            format: '#\'%\'', // Format Y-axis values as percentages
+            format: '#\'%\'',
             viewWindow: {
                 min: 0,
                 max: 100
@@ -211,12 +192,11 @@ function drawCharts() {
     });
 }
 
-// Function to update the table dynamically with percentage values
 function updateLegendTable() {
     const geoData = JSON.parse(localStorage.getItem('geoData'));
 
     const legendDiv = document.getElementById('legend_div');
-    legendDiv.innerHTML = ''; // Clear previous content
+    legendDiv.innerHTML = '';
 
     geoData.forEach((item) => {
         if (item[0] !== 'Country') {
@@ -229,7 +209,7 @@ function updateLegendTable() {
 
             const percentageDiv = document.createElement('div');
             percentageDiv.className = 'legend-percentage';
-            percentageDiv.textContent = `${item[1]}%`;  // Show the value in percentage
+            percentageDiv.textContent = `${item[1]}%`;
 
             legendItem.appendChild(countryDiv);
             legendItem.appendChild(percentageDiv);
@@ -238,7 +218,6 @@ function updateLegendTable() {
     });
 }
 
-// Function to set a random time and store it in localStorage
 function setRandomTime() {
     const start = 4 * 60 + 12;
     const end = 6 * 60 + 45;
@@ -250,23 +229,18 @@ function setRandomTime() {
     const time = `00:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     document.getElementById('time-title').textContent = time;
 
-    // Store the random time in localStorage
     localStorage.setItem('randomTime', time);
 }
 
-// Check if random time has been set in the last minute and set it if necessary
 function checkAndSetRandomTime() {
     const lastSetTime = localStorage.getItem('lastSetTime');
     const currentTime = new Date().getTime();
-
-    // Only set the random time if it hasn't been set in the last minute
     if (!lastSetTime || currentTime - lastSetTime >= 60000 ) {
-        setRandomTime();  // Set random time
-        localStorage.setItem('lastSetTime', currentTime);  // Store the current time in localStorage
+        setRandomTime();
+        localStorage.setItem('lastSetTime', currentTime);
     }
 }
 
-// Load saved random time on page load
 function loadSavedRandomTime() {
     const savedTime = localStorage.getItem('randomTime');
     if (savedTime) {
@@ -274,20 +248,19 @@ function loadSavedRandomTime() {
     }
 }
 
-// Regenerate and save new data every minute
 setInterval(() => {
     saveDataToLocalStorage();
     drawCharts();
-    updateLegendTable();  // Update the legend table with new data
-    checkAndSetRandomTime(); // Check and set the random time if necessary
-}, 60000 ); // 1 minute interval
+    updateLegendTable();
+    checkAndSetRandomTime();
+}, 60000 );
 
 google.charts.setOnLoadCallback(() => {
-    generateLineChartData();  // Generate or load the data for the line chart
-    drawLineChart();           // Draw the line chart with the loaded data
-    updateLineChartData();     // Start updating the line chart every 10 seconds
-    drawCharts();              // Draw the pie, geo, and column charts
-    updateLegendTable();       // Initialize the legend table
-    loadSavedRandomTime();     // Load saved random time from localStorage
-    checkAndSetRandomTime();   // Check and set the random time at startup if necessary
+    generateLineChartData();
+    drawLineChart();
+    updateLineChartData();
+    drawCharts();
+    updateLegendTable();
+    loadSavedRandomTime();
+    checkAndSetRandomTime();
 });

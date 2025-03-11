@@ -37,7 +37,9 @@ const countryMapping = {
     'SI': 'Slovenia',
     'BG': 'Bulgaria',
     'CH': 'Switzerland',
-    'IE': 'Ireland'
+    'IE': 'Ireland',
+    'GL': 'Greenland',
+    'US': 'United States'
 };
 
 function getCountryName(countryCode) {

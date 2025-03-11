@@ -1,141 +1,244 @@
-document.getElementById("pop-up-link").addEventListener("click", function () {
-    document.getElementById("pop-up-block").style.opacity="1";
-    document.getElementById("pop-up-block").style.visibility="visible";
-    document.body.style.overflowY="hidden";
+const pageElements = {
+    popUpLink: document.getElementById("pop-up-link"),
+    popUpBlock: document.getElementById("pop-up-block"),
+    closeIcon: document.getElementById("close-icon"),
+    totalVisits: document.getElementById("total-visits-number"),
+    timeTitle: document.getElementById("time-title"),
+    visitsText: document.getElementById("visits-text"),
+    legendDiv: document.getElementById("legend-div"),
+    lineChart: document.getElementById("line_chart"),
+    pieChart: document.getElementById("piechart"),
+    columnChart: document.getElementById("columnchart"),
+    geoChart: document.getElementById("geochart")
+};
+
+pageElements.popUpLink.addEventListener("click", function () {
+    pageElements.popUpBlock.style.opacity = "1";
+    pageElements.popUpBlock.style.visibility = "visible";
+    document.body.style.overflowY = "hidden";
 });
 
-document.getElementById("close-icon").addEventListener("click", function () {
-    document.getElementById("pop-up-block").style.opacity="0";
-    document.getElementById("pop-up-block").style.visibility="hidden";
-    document.body.style.overflowY="auto";
+pageElements.closeIcon.addEventListener("click", function () {
+    pageElements.popUpBlock.style.opacity = "0";
+    pageElements.popUpBlock.style.visibility = "hidden";
+    document.body.style.overflowY = "auto";
 });
+
+const countryMapping = {
+    'FR': 'France',
+    'PL': 'Poland',
+    'BA': 'Bosnia and Herzegovina',
+    'UK': 'United Kingdom',
+    'SE': 'Sweden',
+    'DE': 'Germany',
+    'FI': 'Finland',
+    'RO': 'Romania',
+    'ES': 'Spain',
+    'SI': 'Slovenia',
+    'BG': 'Bulgaria',
+    'CH': 'Switzerland',
+    'IE': 'Ireland'
+};
+
+function getCountryName(countryCode) {
+    return countryMapping[countryCode.toLowerCase()] || countryCode.toUpperCase();
+}
 
 function toggleActiveMode(buttonId) {
-    var buttons = document.querySelectorAll(".btn-custom-mode, .btn-custom");
-    buttons.forEach(function (btn) {
-        btn.classList.remove("active");
-    });
+    document.querySelectorAll(".btn-custom-mode, .btn-custom")
+        .forEach(btn => btn.classList.remove("active"));
     document.getElementById(buttonId).classList.add("active");
 }
 
+let currentJsonFile = 'day.json';
+
+function handlePeriodChange(period, jsonFile) {
+    return function () {
+        toggleActiveMode(`btn${period.charAt(0).toUpperCase()}`);
+        currentJsonFile = jsonFile;
+        drawLineChart(period);
+        updateAllCharts();
+        setRandomTime();
+    };
+}
+
+document.getElementById("btnD").addEventListener("click", handlePeriodChange('daily', 'day.json'));
+document.getElementById("btnW").addEventListener("click", handlePeriodChange('weekly', 'week.json'));
+document.getElementById("btnM").addEventListener("click", handlePeriodChange('monthly', 'month.json'));
+
 google.charts.load('current', { 'packages': ['corechart', 'geochart', 'line'] });
 
-let lineData = [];
-
-function generateLineChartData() {
-    if (localStorage.getItem('lineData')) {
-        lineData = JSON.parse(localStorage.getItem('lineData'));
-    } else {
-        lineData.push([new Date(), Math.floor(Math.random() * 101) + 50]);
-        localStorage.setItem('lineData', JSON.stringify(lineData));
-    }
-}
-
-function drawLineChart() {
-    let lineChart = new google.visualization.LineChart(document.getElementById('line_chart'));
-    lineChart.draw(google.visualization.arrayToDataTable([['Time', 'Visits'], ...lineData]), {
-        curveType: 'function',
-        legend: { position: 'none' },
-        tooltip: { trigger: 'none' },
-        hAxis: {
-            title: '',
-            textPosition: 'none'
-        },
-        vAxis: {
-            title: '',
-            minValue: 50,
-            maxValue: 150,
-            textPosition: 'none'
-        }
-    });
-}
-
-function updateLineChartData() {
-    setInterval(() => {
-        const currentTime = new Date();
-        const newValue = Math.floor(Math.random() * 101) + 50;
-        lineData.push([currentTime, newValue]);
-        if (lineData.length >= 24) {
-            lineData = [[new Date(), newValue]];
-        }
-        localStorage.setItem('lineData', JSON.stringify(lineData));
-        drawLineChart();
-        setRandomTime();
-    }, 60000 );
-}
-
-function generateRandomDataForOtherCharts(type) {
-    const data = [];
-    switch (type) {
-        case 'pie':
-            const mobilePercentage = Math.floor(Math.random() * (94 - 81 + 1)) + 81;
-            const desktopPercentage = 100 - mobilePercentage;
-            data.push(['Device', 'Percentage']);
-            data.push(['Mobile', mobilePercentage]);
-            data.push(['Desktop', desktopPercentage]);
-            break;
-        case 'column':
-            const displayAdsPercentage = Math.floor(Math.random() * (87 - 75 + 1)) + 75;
-            const paidPercentage = 100 - displayAdsPercentage;
-            data.push(['Category', 'Percentage']);
-            data.push(['DisplayAds', displayAdsPercentage]);
-            data.push(['Paid', paidPercentage]);
-            break;
-        case 'geo':
-            data.push(['Country', 'Percentage']);
-            const countries = ['France', 'Spain', 'United Kingdom', 'Australia', 'Mexico'];
-            let remainingValue = 100;
-            countries.forEach((country, index) => {
-                let randomValue = (index === countries.length - 1) ? remainingValue : Math.floor(Math.random() * (remainingValue - (countries.length - 1 - index))) + 1;
-                remainingValue -= randomValue;
-                data.push([country, randomValue]);
-            });
-            break;
-        default:
-            break;
+function generateDailyData() {
+    const data = [['Hour', 'Visits']];
+    for (let hour = 0; hour < 24; hour++) {
+        let visits = (hour >= 18 || hour < 2)
+            ? Math.floor(Math.random() * (150 - 120) + 120)
+            : Math.floor(Math.random() * (80 - 50) + 50);
+        visits += Math.sin(hour / 24 * Math.PI * 2) * 10;
+        const formattedHour = hour.toString().padStart(2, '0');
+        data.push([`${formattedHour}:00`, visits / 10]);
     }
     return data;
 }
 
-function saveDataToLocalStorage() {
-    const pieData = generateRandomDataForOtherCharts('pie');
-    const geoData = generateRandomDataForOtherCharts('geo');
-    const columnData = generateRandomDataForOtherCharts('column');
-    localStorage.setItem('pieData', JSON.stringify(pieData));
-    localStorage.setItem('geoData', JSON.stringify(geoData));
-    localStorage.setItem('columnData', JSON.stringify(columnData));
-}
-
-function loadDataFromLocalStorage() {
-    const pieData = JSON.parse(localStorage.getItem('pieData'));
-    const geoData = JSON.parse(localStorage.getItem('geoData'));
-    const columnData = JSON.parse(localStorage.getItem('columnData'));
-
-    if (!pieData || !geoData || !columnData) {
-        saveDataToLocalStorage();
+function generateWeeklyData() {
+    const data = [['Hour', 'Visits']];
+    for (let hour = 0; hour < 168; hour++) {
+        const hourOfDay = hour % 24;
+        const day = Math.floor(hour / 24) + 1;
+        let visits = (hourOfDay >= 18 || hourOfDay < 2)
+            ? Math.floor(Math.random() * (200 - 150) + 150)
+            : Math.floor(Math.random() * (100 - 70) + 70);
+        visits += Math.sin((hour / 168) * Math.PI * 2) * 20;
+        data.push([`Day ${day}, ${hourOfDay.toString().padStart(2, '0')}:00`, visits / 10]);
     }
-
-    return {
-        pieData: pieData || generateRandomDataForOtherCharts('pie'),
-        geoData: geoData || generateRandomDataForOtherCharts('geo'),
-        columnData: columnData || generateRandomDataForOtherCharts('column')
-    };
+    return data;
 }
 
-function drawCharts() {
-    const { pieData, geoData, columnData } = loadDataFromLocalStorage();
+function generateMonthlyData() {
+    const data = [['Hour', 'Visits']];
+    for (let hour = 0; hour < 744; hour++) {
+        const hourOfDay = hour % 24;
+        const day = Math.floor(hour / 24) + 1;
+        let visits = (hourOfDay >= 18 || hourOfDay < 2)
+            ? Math.floor(Math.random() * (250 - 200) + 200)
+            : Math.floor(Math.random() * (150 - 100) + 100);
+        visits += Math.sin((hour / 744) * Math.PI * 2) * 30;
+        data.push([`Day ${day}, ${hourOfDay.toString().padStart(2, '0')}:00`, visits / 10]);
+    }
+    return data;
+}
+
+function drawLineChart(period) {
+    const periodConfig = {
+        daily: {
+            getData: generateDailyData,
+            title: 'Hours (24 hours)',
+            text: 'This chart displays the trend of daily visits over the past 3 days.',
+            gridlines: 24
+        },
+        weekly: {
+            getData: generateWeeklyData,
+            title: 'Hours (7 days)',
+            text: 'This chart displays the trend of weekly visits over the past 3 weeks.',
+            gridlines: 14
+        },
+        monthly: {
+            getData: generateMonthlyData,
+            title: 'Hours (31 days)',
+            text: 'This chart displays the trend of monthly visits over the past 3 months.',
+            gridlines: 31
+        }
+    };
+
+    const config = periodConfig[period] || periodConfig.daily;
+    const data = google.visualization.arrayToDataTable(config.getData());
+
+    const view = new google.visualization.DataView(data);
+    view.setColumns([0, 1, {
+        type: 'string',
+        role: 'tooltip',
+        properties: { html: true },
+        calc: (dt, row) => `<div style="padding:5px; font-family: Arial, sans-serif; font-size: 14px;width: fit-content;"><b>${dt.getValue(row, 0)}</b></div>`
+    }]);
+
+    const options = {
+        curveType: 'function',
+        legend: { position: 'none' },
+        tooltip: { isHtml: true },
+        hAxis: {
+            title: config.title,
+            gridlines: {
+                count: config.gridlines,
+                color: '#f5f5f5'
+            },
+            baselineColor: '#ddd',
+            textStyle: { fontSize: 12 }
+        },
+        vAxis: {
+            title: 'Visits',
+            viewWindow: { min: 0, max: 30 },
+            gridlines: { color: '#f5f5f5' },
+            baselineColor: '#ddd',
+            textStyle: { fontSize: 12 }
+        },
+        chartArea: { width: '90%', height: '80%' },
+        colors: ['#3366cc'],
+        lineWidth: 2
+    };
+
+    const chart = new google.visualization.LineChart(pageElements.lineChart);
+    chart.draw(view, options);
+    pageElements.visitsText.textContent = config.text;
+}
+
+async function fetchGeoData() {
+    try {
+        const response = await fetch(`https://adavice.github.io/charts/json/${currentJsonFile}`);
+        const data = await response.json();
+        const geoData = [['Country', 'Value', 'Percentage']];
+
+        const totalClicks = Object.values(data.totals.dist)
+            .reduce((sum, country) => sum + country.clicks, 0);
+
+        pageElements.totalVisits.textContent = totalClicks;
+
+        for (const [countryCode, countryData] of Object.entries(data.totals.dist)) {
+            const percentage = (countryData.clicks / totalClicks) * 100;
+            geoData.push([
+                getCountryName(countryCode),
+                countryData.clicks,
+                percentage
+            ]);
+        }
+
+        return { geoData, totalClicks };
+    } catch (error) {
+        console.error('Error fetching geo data:', error);
+        return {
+            geoData: [['Country', 'Value', 'Percentage'], ['No Data', 0, 0]],
+            totalClicks: 0
+        };
+    }
+}
+
+function generateRandomDataForOtherCharts(type) {
+    const data = [['Category', 'Percentage']];
+    if (type === 'pie') {
+        const mobilePercentage = Math.floor(Math.random() * (94 - 81 + 1)) + 81;
+        data.push(['Mobile', mobilePercentage], ['Desktop', 100 - mobilePercentage]);
+    } else if (type === 'column') {
+        const displayAdsPercentage = Math.floor(Math.random() * (87 - 75 + 1)) + 75;
+        data.push(['DisplayAds', displayAdsPercentage], ['Paid', 100 - displayAdsPercentage]);
+    }
+    return data;
+}
+
+async function drawCharts() {
+    const [pieData, columnData] = ['pie', 'column'].map(generateRandomDataForOtherCharts);
+    const { geoData, totalClicks } = await fetchGeoData();
+
+    const createTooltipColumn = (dataTable) => ({
+        type: 'string',
+        role: 'tooltip',
+        properties: { html: true },
+        calc: function (dt, row) {
+            return `<div style="font-family: Arial, sans-serif; font-size: 14px; padding:5px">
+                <b>${dt.getValue(row, 0)}</b> ${dt.getValue(row, 1)}%</div>`;
+        }
+    });
+
     const pieChartData = google.visualization.arrayToDataTable(pieData);
-    const pieChart = new google.visualization.PieChart(document.getElementById('piechart'));
-    pieChart.draw(pieChartData, {
+    const pieView = new google.visualization.DataView(pieChartData);
+    pieView.setColumns([0, 1, createTooltipColumn(pieChartData)]);
+
+    const pieChart = new google.visualization.PieChart(pageElements.pieChart);
+    pieChart.draw(pieView, {
         colors: ['#6a98f6', '#3366cc'],
         tooltip: {
-            textStyle: {
-                fontSize: 14
-            },
+            isHtml: true,
+            textStyle: { fontSize: 14 },
             trigger: 'focus'
-        },
-        pieSliceTextStyle: {
-            fontSize: 14
         },
         legend: {
             position: 'bottom',
@@ -143,124 +246,120 @@ function drawCharts() {
                 fontSize: 12,
                 color: 'black'
             }
-        }
+        },
+        fontSize: 14
     });
 
-    const geoChartData = google.visualization.arrayToDataTable(geoData);
-    const geoChart = new google.visualization.GeoChart(document.getElementById('geochart'));
-    geoChart.draw(geoChartData, {
-        colorAxis: { minValue: 0, maxValue: 100, colors: ['#cfddfa', '#3366cc'] },
+    const geoDataTable = new google.visualization.DataTable();
+    geoDataTable.addColumn('string', 'Country');
+    geoDataTable.addColumn('number', 'Value');
+    geoDataTable.addColumn({ type: 'string', role: 'tooltip', p: { html: true } });
+
+    geoData.slice(1).forEach(row => {
+        const percentage = (row[1] / totalClicks) * 100;
+        geoDataTable.addRow([
+            row[0],
+            percentage,
+            `${percentage.toFixed(2)}%`
+        ]);
+    });
+
+    const geoChart = new google.visualization.GeoChart(pageElements.geoChart);
+    geoChart.draw(geoDataTable, {
+        colorAxis: {
+            colors: ['#cfddfa', '#a5c4f7', '#7ca0f4', '#527cf1', '#3366cc'],
+            values: [0, 100],
+            labels: ['0%', '100%']
+        },
         legend: { textStyle: { fontSize: 14 } },
         tooltip: {
             trigger: 'focus',
-            textStyle: {
-                fontSize: 14
-            }
+            textStyle: { fontSize: 14 }
         }
     });
 
     const columnChartData = google.visualization.arrayToDataTable(columnData);
-    const columnChart = new google.visualization.ColumnChart(document.getElementById('columnchart'));
-    columnChart.draw(columnChartData, {
+    const columnView = new google.visualization.DataView(columnChartData);
+    columnView.setColumns([0, 1, createTooltipColumn(columnChartData)]); 
+
+    const columnChart = new google.visualization.ColumnChart(pageElements.columnChart);
+    columnChart.draw(columnView, {
         colors: ['#6a98f6', '#3366cc'],
         tooltip: {
-            textStyle: {
-                fontSize: 14
-            },
+            isHtml: true,
+            textStyle: { fontSize: 14 },
             trigger: 'focus'
         },
-        legend: {
-            position: 'none',
-        },
+        legend: { position: 'none' },
         hAxis: {
             title: '',
-            textStyle: {
-                fontSize: 12
-            }
+            textStyle: { fontSize: 12 }
         },
         vAxis: {
             title: '',
             format: '#\'%\'',
-            viewWindow: {
-                min: 0,
-                max: 100
-            },
-            textStyle: {
-                fontSize: 12
-            }
+            viewWindow: { min: 0, max: 100 },
+            textStyle: { fontSize: 12 }
         }
     });
 }
 
-function updateLegendTable() {
-    const geoData = JSON.parse(localStorage.getItem('geoData'));
+async function updateLegendTable() {
+    const { geoData, totalClicks } = await fetchGeoData();
+    pageElements.legendDiv.innerHTML = '';
 
-    const legendDiv = document.getElementById('legend_div');
-    legendDiv.innerHTML = '';
+    if (geoData && geoData.length > 1) {
+        const sortedData = geoData.slice(1).sort((a, b) => b[1] - a[1]);
+        const columnsContainer = document.createElement('div');
+        columnsContainer.style.display = 'flex';
+        columnsContainer.style.justifyContent = 'space-between';
+        columnsContainer.style.gap = '40px';
+        pageElements.legendDiv.appendChild(columnsContainer);
 
-    geoData.forEach((item) => {
-        if (item[0] !== 'Country') {
-            const legendItem = document.createElement('div');
-            legendItem.className = 'legend-item';
+        const [leftColumn, rightColumn] = [document.createElement('div'), document.createElement('div')];
+        const middleIndex = Math.ceil(sortedData.length / 2);
+        const [leftData, rightData] = [sortedData.slice(0, middleIndex), sortedData.slice(middleIndex)];
 
-            const countryDiv = document.createElement('div');
-            countryDiv.className = 'legend-country';
-            countryDiv.textContent = item[0];
+        const createLegendItems = (data, column) => {
+            data.forEach(item => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
 
-            const percentageDiv = document.createElement('div');
-            percentageDiv.className = 'legend-percentage';
-            percentageDiv.textContent = `${item[1]}%`;
+                const countryDiv = document.createElement('div');
+                countryDiv.className = 'legend-country';
+                countryDiv.textContent = item[0];
 
-            legendItem.appendChild(countryDiv);
-            legendItem.appendChild(percentageDiv);
-            legendDiv.appendChild(legendItem);
-        }
-    });
+                const clicksDiv = document.createElement('div');
+                clicksDiv.className = 'legend-percentage';
+                clicksDiv.textContent = ((item[1] / totalClicks) * 100).toFixed(2) + '%';
+
+                legendItem.append(countryDiv, clicksDiv);
+                column.appendChild(legendItem);
+            });
+        };
+
+        createLegendItems(leftData, leftColumn);
+        createLegendItems(rightData, rightColumn);
+        columnsContainer.append(leftColumn, rightColumn);
+    }
 }
 
 function setRandomTime() {
     const start = 4 * 60 + 12;
     const end = 6 * 60 + 45;
     const randomSeconds = Math.floor(Math.random() * (end - start + 1)) + start;
-
     const minutes = Math.floor(randomSeconds / 60);
     const seconds = randomSeconds % 60;
-
-    const time = `00:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    document.getElementById('time-title').textContent = time;
-
-    localStorage.setItem('randomTime', time);
+    pageElements.timeTitle.textContent = `00:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function checkAndSetRandomTime() {
-    const lastSetTime = localStorage.getItem('lastSetTime');
-    const currentTime = new Date().getTime();
-    if (!lastSetTime || currentTime - lastSetTime >= 60000 ) {
-        setRandomTime();
-        localStorage.setItem('lastSetTime', currentTime);
-    }
-}
-
-function loadSavedRandomTime() {
-    const savedTime = localStorage.getItem('randomTime');
-    if (savedTime) {
-        document.getElementById('time-title').textContent = savedTime;
-    }
-}
-
-setInterval(() => {
-    saveDataToLocalStorage();
+function updateAllCharts() {
     drawCharts();
     updateLegendTable();
-    checkAndSetRandomTime();
-}, 60000 );
+}
 
-google.charts.setOnLoadCallback(() => {
-    generateLineChartData();
-    drawLineChart();
-    updateLineChartData();
-    drawCharts();
-    updateLegendTable();
-    loadSavedRandomTime();
-    checkAndSetRandomTime();
+google.charts.setOnLoadCallback(async () => {
+    drawLineChart('daily');
+    await updateAllCharts();
+    setRandomTime();
 });

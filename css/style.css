@@ -167,12 +167,11 @@
        }
 
        /*custom legend*/
-       #legend_div {
+       #legend-div {
            position: absolute;
            bottom: 40px;
            right: 40px;
            margin-top: 20px;
-           width: 300px;
            font-size: 14px;
        }
 
@@ -184,7 +183,7 @@
        }
 
        .legend-country {
-           width: 150px;
+           width: 60px;
        }
 
        .legend-percentage {
@@ -195,7 +194,7 @@
 
        #geochart {
            height: 300px;
-           width: 700px;
+           width: 600px;
        }
 
        .tooltip-button {
@@ -367,6 +366,8 @@
            justify-content: space-between;
        }
 
+       svg > g > g.google-visualization-tooltip { pointer-events: none }
+
        @media (max-width: 970px) {
            #geochart {
                height: 300px;
@@ -374,7 +375,7 @@
                margin: 0 auto;
            }
 
-           #legend_div {
+           #legend-div {
                position: relative;
                margin: 30px auto;
                bottom: 0px;

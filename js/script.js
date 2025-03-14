@@ -4,7 +4,7 @@ const pageElements = {
     closeIcon: document.getElementById("close-icon"),
     totalVisits: document.getElementById("total-visits-number"),
     timeTitle: document.getElementById("time-title"),
-    visitsText: document.getElementById("visits-text"),
+    //visitsText: document.getElementById("visits-text"),
     legendDiv: document.getElementById("legend-div"),
     lineChart: document.getElementById("line_chart"),
     pieChart: document.getElementById("piechart"),
@@ -99,7 +99,7 @@ function generateWeeklyData() {
 
 function generateMonthlyData() {
     const data = [['Hour', 'Visits']];
-    for (let hour = 0; hour < 744; hour++) {
+    for (let hour = 0; hour < 720; hour++) {
         const hourOfDay = hour % 24;
         const day = Math.floor(hour / 24) + 1;
         let visits = (hourOfDay >= 18 || hourOfDay < 2)
@@ -115,21 +115,21 @@ function drawLineChart(period) {
     const periodConfig = {
         daily: {
             getData: generateDailyData,
-            title: 'Hours (24 hours)',
-            text: 'This chart displays the trend of daily visits over the past 3 days.',
+            title: 'Hours (24h)',
+            //text: 'This chart displays the trend of daily visits over the past 3 days.',
             gridlines: 24
         },
         weekly: {
             getData: generateWeeklyData,
-            title: 'Hours (7 days)',
-            text: 'This chart displays the trend of weekly visits over the past 3 weeks.',
+            title: 'Days (7d)',
+            //text: 'This chart displays the trend of weekly visits over the past 3 weeks.',
             gridlines: 14
         },
         monthly: {
             getData: generateMonthlyData,
-            title: 'Hours (31 days)',
-            text: 'This chart displays the trend of monthly visits over the past 3 months.',
-            gridlines: 31
+            title: 'Days (30 days)',
+            //text: 'This chart displays the trend of monthly visits over the past 3 months.',
+            gridlines: 30
         }
     };
 
@@ -171,7 +171,7 @@ function drawLineChart(period) {
 
     const chart = new google.visualization.LineChart(pageElements.lineChart);
     chart.draw(view, options);
-    pageElements.visitsText.textContent = config.text;
+    //pageElements.visitsText.textContent = config.text;
 }
 
 async function fetchGeoData() {

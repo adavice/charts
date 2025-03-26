@@ -1,4 +1,3 @@
-<<<<<<< HEAD:json/month.json
 {
   "channelsOverview": { "paid": 18, "displayAds": 82 },
   "alerts": null,
@@ -748,17 +747,3 @@
     "total_pixels": "3,436"
   }
 }
-=======
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>401 Unauthorized</title>
-</head><body>
-<h1>Unauthorized</h1>
-<p>This server could not verify that you
-are authorized to access the document
-requested.  Either you supplied the wrong
-credentials (e.g., bad password), or your
-browser doesn't understand how to supply
-the credentials required.</p>
-</body></html>
->>>>>>> c786de4c20343032d8715e47a7f920d27af9df21:data/month.json

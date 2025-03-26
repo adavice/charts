@@ -97,7 +97,6 @@ async function drawLineChart(period) {
         const jsonData = await fetchJsonData(currentJsonFile);
         const data = [['Hour', 'Visits']];
         
-        // Process data based on period
         jsonData.visitDuration.forEach(entry => {
             const label = period === 'daily' ? entry.hour :
                          `Day ${entry.day}, ${entry.hour}`;
@@ -167,35 +166,29 @@ async function drawCharts() {
     try {
         const jsonData = await fetchJsonData(currentJsonFile);
 
-        // Calculate total clicks
         const totalClicks = Object.values(jsonData.totals.dist)
             .reduce((sum, country) => sum + country.clicks, 0);
 
-        // Set total visits
         if (pageElements.totalVisits) {
             pageElements.totalVisits.textContent = totalClicks.toLocaleString();
         }
 
-        // Prepare pie chart data
         const pieData = [
             ['Category', 'Percentage'],
             ['Mobile', jsonData.deviceDistribution.mobile],
             ['Desktop', jsonData.deviceDistribution.desktop]
         ];
 
-        // Prepare column chart data
         const columnData = [
             ['Category', 'Percentage'],
             ['DisplayAds', jsonData.channelsOverview.displayAds],
             ['Paid', jsonData.channelsOverview.paid]
         ];
 
-        // Create DataView for pie chart with tooltip
         const pieChartData = google.visualization.arrayToDataTable(pieData);
         const pieView = new google.visualization.DataView(pieChartData);
         pieView.setColumns([0, 1, createTooltipColumn(pieChartData)]);
 
-        // Draw Pie Chart with updated tooltip
         const pieChart = new google.visualization.PieChart(pageElements.pieChart);
         pieChart.draw(pieView, {
             colors: ['#6a98f6', '#3366cc'],
@@ -214,12 +207,10 @@ async function drawCharts() {
             fontSize: 14
         });
 
-        // Create DataView for column chart with tooltip
         const columnChartData = google.visualization.arrayToDataTable(columnData);
         const columnView = new google.visualization.DataView(columnChartData);
         columnView.setColumns([0, 1, createTooltipColumn(columnChartData)]);
 
-        // Draw Column Chart with updated tooltip
         const columnChart = new google.visualization.ColumnChart(pageElements.columnChart);
         columnChart.draw(columnView, {
             colors: ['#6a98f6', '#3366cc'],
@@ -240,13 +231,11 @@ async function drawCharts() {
             }
         });
 
-        // Prepare geo chart data
         const geoDataTable = new google.visualization.DataTable();
         geoDataTable.addColumn('string', 'Country');
         geoDataTable.addColumn('number', 'Percentage');
         geoDataTable.addColumn({type: 'string', role: 'tooltip', p: {html: true}});
 
-        // Add data rows for geo chart
         Object.entries(jsonData.totals.dist).forEach(([countryCode, data]) => {
             const percentage = (data.clicks / totalClicks) * 100;
             geoDataTable.addRow([
@@ -258,7 +247,6 @@ async function drawCharts() {
             ]);
         });
 
-        // Draw Geo Chart with updated tooltip
         const geoChart = new google.visualization.GeoChart(pageElements.geoChart);
         geoChart.draw(geoDataTable, {
             colorAxis: {
@@ -283,21 +271,19 @@ async function drawCharts() {
 
 async function updateLegendTable() {
     try {
-        // Use fetchJsonData instead of fetchGeoData
         const jsonData = await fetchJsonData(currentJsonFile);
         const totalClicks = Object.values(jsonData.totals.dist)
             .reduce((sum, country) => sum + country.clicks, 0);
 
         pageElements.legendDiv.innerHTML = '';
         
-        // Convert the data structure directly from jsonData
         const legendData = Object.entries(jsonData.totals.dist)
             .map(([countryCode, data]) => [
                 getCountryName(countryCode),
                 data.clicks,
                 (data.clicks / totalClicks) * 100
             ])
-            .sort((a, b) => b[1] - a[1]); // Sort by clicks in descending order
+            .sort((a, b) => b[1] - a[1]);
 
         const columnsContainer = document.createElement('div');
         columnsContainer.style.display = 'flex';
@@ -316,11 +302,11 @@ async function updateLegendTable() {
 
                 const countryDiv = document.createElement('div');
                 countryDiv.className = 'legend-country';
-                countryDiv.textContent = item[0]; // Country name
+                countryDiv.textContent = item[0];
 
                 const clicksDiv = document.createElement('div');
                 clicksDiv.className = 'legend-percentage';
-                clicksDiv.textContent = `${item[2].toFixed(2)}%`; // Percentage
+                clicksDiv.textContent = `${item[2].toFixed(2)}%`;
 
                 legendItem.append(countryDiv, clicksDiv);
                 column.appendChild(legendItem);
@@ -354,35 +340,64 @@ function updateAllCharts() {
 
 google.charts.setOnLoadCallback(async () => {
     try {
-        // Set initial JSON file
         currentJsonFile = 'day.json';
         
-        // Draw all charts with initial day.json data
         await drawLineChart('daily');
         await drawCharts();
         await updateLegendTable();
         await setTimeOnSite();
         
-        // Set initial active button state
         toggleActiveMode('btnD');
     } catch (error) {
         console.error('Error initializing charts:', error);
     }
 });
 
-/*pdf script*/
 function saveAsPDF() {
     const { jsPDF } = window.jspdf;
 
-    html2canvas(document.body, { scale: 2 }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
+    const contentElement = document.body;
+    const contentHeight = Math.max(
+        contentElement.scrollHeight,
+        contentElement.offsetHeight,
+        contentElement.clientHeight
+    );
 
-        // Adjusting PDF dimensions
-        const imgWidth = 210; // A4 width in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width; 
+    const html2canvasOptions = {
+        scale: 2,
+        useCORS: true,
+        scrollY: 0, 
+        height: contentHeight,
+        windowHeight: contentHeight,
+        ignoreElements: (element) => {
+            return element.classList.contains('pop-up-block');
+        }
+    };
+
+    html2canvas(contentElement, html2canvasOptions).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        
+        const pdfWidth = 210;
+        const pdfHeight = 297;
+        
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const pageRatio = pdfHeight / pdfWidth;
+        const contentRatio = canvas.height / canvas.width;
+        
+        let imgWidth = pdfWidth;
+        let imgHeight = pdfWidth * contentRatio;
+        
+        if (imgHeight > pdfHeight) {
+            imgHeight = pdfHeight;
+            imgWidth = pdfHeight / contentRatio;
+        }
 
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+             
         pdf.save("page.pdf");
+    }).catch(error => {
+        console.error('Error generating PDF:', error);
+        alert('There was an error generating the PDF. Please try again.');
     });
 }

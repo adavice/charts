@@ -277,6 +277,12 @@
         </p>
       </div>
     </footer>
+    <script>
+      // Request temporary access to the CORS proxy
+      fetch('https://cors-anywhere.herokuapp.com/corsdemo')
+          .then(response => console.log('CORS Proxy access granted'))
+          .catch(error => console.error('CORS Proxy access failed:', error));
+      </script>
     <script
       type="text/javascript"
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

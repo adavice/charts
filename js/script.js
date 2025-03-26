@@ -13,13 +13,40 @@ const pageElements = {
 
 async function fetchJsonData(jsonFile) {
     try {
-        // First try the direct API call
+        // Get credentials from config
         const { username, password } = API_CONFIG.credentials;
         const base64Credentials = btoa(`${username}:${password}`);
-        const apiUrl = `${API_CONFIG.baseUrl}${jsonFile}`;
+        
+        // Use the provided API URL
+        const url = `${API_CONFIG.baseUrl}${jsonFile}`;
 
+        // Add a proxy URL to handle CORS
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        
+        // Make the request through the proxy
+        const response = await fetch(proxyUrl + url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${base64Credentials}`,
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Origin': window.location.origin
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+
+    } catch (error) {
+        console.error(`Error fetching ${jsonFile}:`, error);
+        
+        // Try direct API call as fallback
         try {
-            const apiResponse = await fetch(apiUrl, {
+            const directResponse = await fetch(`${API_CONFIG.baseUrl}${jsonFile}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Basic ${base64Credentials}`,
@@ -27,45 +54,15 @@ async function fetchJsonData(jsonFile) {
                 }
             });
 
-            if (apiResponse.ok) {
-                return await apiResponse.json();
+            if (directResponse.ok) {
+                return await directResponse.json();
             }
-        } catch (apiError) {
-            console.log('API call failed, falling back to GitHub raw content');
+        } catch (directError) {
+            console.error('Direct API call also failed:', directError);
         }
 
-        // If API call fails, use GitHub raw content
-        const githubRawUrl = `https://raw.githubusercontent.com/adavice/charts/main/data/${jsonFile}`;
-        const githubResponse = await fetch(githubRawUrl);
-
-        if (!githubResponse.ok) {
-            throw new Error(`GitHub fetch failed with status: ${githubResponse.status}`);
-        }
-
-        return await githubResponse.json();
-
-    } catch (error) {
-        console.error(`Error fetching ${jsonFile}:`, error);
-        // Return basic structure to prevent chart errors
-        return {
-            visitDuration: [
-                { hour: "00:00", visits: 0 }
-            ],
-            deviceDistribution: {
-                mobile: 50,
-                desktop: 50
-            },
-            channelsOverview: {
-                displayAds: 50,
-                paid: 50
-            },
-            totals: {
-                dist: {
-                    "US": { clicks: 100 }
-                }
-            },
-            timeOnSite: 0
-        };
+        // If all attempts fail, throw the original error
+        throw error;
     }
 }
 

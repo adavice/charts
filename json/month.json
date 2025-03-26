@@ -1,5 +1,5 @@
 {
-  "timeOnSite": 8.73,
+  "channelsOverview": { "paid": 18, "displayAds": 82 },
   "alerts": null,
   "alert_events": {},
   "visitDuration": [
@@ -676,6 +676,20 @@
     { "visits": 12.2, "hour": "22:00", "day": 28 },
     { "visits": 13.64, "hour": "23:00", "day": 28 }
   ],
+  "timeOnSite": 8.73,
+  "deviceDistribution": { "desktop": 12, "mobile": 88 },
+  "top_performers": [
+    { "amount": 4.55356382168044, "name": "EE - Orange Checkout CCS pf" },
+    {
+      "amount": 3.963285343476,
+      "name": "SA - Clear Blank Exclusive Prefill CCS gc"
+    },
+    { "amount": 3.03571073230823, "name": "KW - Secure Steps CCS gc" },
+    {
+      "amount": 2.60203842105903,
+      "name": "MK - Shop blank EXCL Prefill CCS mb"
+    }
+  ],
   "totals": {
     "start_time": "1738360800",
     "total_payout": "77,736.50",
@@ -725,23 +739,11 @@
       }
     },
     "payout_type": "Payout",
-    "data_type": "Campaign",
     "end_time": "1740779999",
-    "graph_link": "adv/report",
+    "data_type": "Campaign",
     "total_impressions": "564,652",
-    "total_pixels": "3,436",
-    "offset": 60
-  },
-  "top_performers": [
-    { "amount": 4.55356382168044, "name": "EE - Orange Checkout CCS pf" },
-    {
-      "amount": 3.963285343476,
-      "name": "SA - Clear Blank Exclusive Prefill CCS gc"
-    },
-    { "amount": 3.03571073230823, "name": "KW - Secure Steps CCS gc" },
-    {
-      "amount": 2.60203842105903,
-      "name": "MK - Shop blank EXCL Prefill CCS mb"
-    }
-  ]
+    "graph_link": "adv/report",
+    "offset": 60,
+    "total_pixels": "3,436"
+  }
 }

@@ -13,7 +13,7 @@ const pageElements = {
 
 async function fetchJsonData(jsonFile) {
     try {
-        const response = await fetch(`https://MarinaKomyna.github.io/page_with_charts/json/${jsonFile}`);
+        const response = await fetch(`https://adavice.github.io/charts/json/${jsonFile}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

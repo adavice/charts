@@ -13,59 +13,14 @@ const pageElements = {
 
 async function fetchJsonData(jsonFile) {
     try {
-        // First try the direct API call
-        const { username, password } = API_CONFIG.credentials;
-        const base64Credentials = btoa(`${username}:${password}`);
-        const apiUrl = `${API_CONFIG.baseUrl}${jsonFile}`;
-
-        try {
-            const apiResponse = await fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Basic ${base64Credentials}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (apiResponse.ok) {
-                return await apiResponse.json();
-            }
-        } catch (apiError) {
-            console.log('API call failed, falling back to GitHub raw content');
+        const response = await fetch(`https://MarinaKomyna.github.io/page_with_charts/json/${jsonFile}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        // If API call fails, use GitHub raw content
-        const githubRawUrl = `https://raw.githubusercontent.com/MarinaKomyna/page_with_charts/main/data/${jsonFile}`;
-        const githubResponse = await fetch(githubRawUrl);
-
-        if (!githubResponse.ok) {
-            throw new Error(`GitHub fetch failed with status: ${githubResponse.status}`);
-        }
-
-        return await githubResponse.json();
-
+        return await response.json();
     } catch (error) {
         console.error(`Error fetching ${jsonFile}:`, error);
-        // Return basic structure to prevent chart errors
-        return {
-            visitDuration: [
-                { hour: "00:00", visits: 0 }
-            ],
-            deviceDistribution: {
-                mobile: 50,
-                desktop: 50
-            },
-            channelsOverview: {
-                displayAds: 50,
-                paid: 50
-            },
-            totals: {
-                dist: {
-                    "US": { clicks: 100 }
-                }
-            },
-            timeOnSite: 0
-        };
+        throw error;
     }
 }
 

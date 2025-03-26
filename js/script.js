@@ -13,55 +13,13 @@ const pageElements = {
 
 async function fetchJsonData(jsonFile) {
     try {
-        // Get credentials from config
-        const { username, password } = API_CONFIG.credentials;
-        const base64Credentials = btoa(`${username}:${password}`);
-        
-        // Use the provided API URL
-        const url = `${API_CONFIG.baseUrl}${jsonFile}`;
-
-        // Add a proxy URL to handle CORS
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-        
-        // Make the request through the proxy
-        const response = await fetch(proxyUrl + url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${base64Credentials}`,
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Origin': window.location.origin
-            }
-        });
-
+        const response = await fetch(`https://adavice.github.io/charts/json/${jsonFile}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const data = await response.json();
-        return data;
-
+        return await response.json();
     } catch (error) {
         console.error(`Error fetching ${jsonFile}:`, error);
-        
-        // Try direct API call as fallback
-        try {
-            const directResponse = await fetch(`${API_CONFIG.baseUrl}${jsonFile}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Basic ${base64Credentials}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (directResponse.ok) {
-                return await directResponse.json();
-            }
-        } catch (directError) {
-            console.error('Direct API call also failed:', directError);
-        }
-
-        // If all attempts fail, throw the original error
         throw error;
     }
 }

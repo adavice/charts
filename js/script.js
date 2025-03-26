@@ -35,7 +35,7 @@ async function fetchJsonData(jsonFile) {
         }
 
         // If API call fails, use GitHub raw content
-        const githubRawUrl = `https://raw.githubusercontent.com/MarinaKomyna/page_with_charts/main/data/${jsonFile}`;
+        const githubRawUrl = `https://raw.githubusercontent.com/adavice/charts/main/data/${jsonFile}`;
         const githubResponse = await fetch(githubRawUrl);
 
         if (!githubResponse.ok) {

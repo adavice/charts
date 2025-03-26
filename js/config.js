@@ -1,11 +1,11 @@
 const API_CONFIG = {
     baseUrl: 'https://logs.radinet.net/json/',
     credentials: {
-        username: 'radinet',
-        password: '1234567890'
+        username: '',
+        password: ''
     },
     metadata: {
-        last_updated: '2025-03-26 10:20:30',
-        updated_by: 'radinet'
+        last_updated: '2025-03-26 10:43:48',
+        updated_by: 'adavice'
     }
 };
